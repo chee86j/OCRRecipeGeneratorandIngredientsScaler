@@ -1,0 +1,14 @@
+﻿node_modules/
+dist/
+build/
+.pnp.cjs
+.pnp.loader.mjs
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+coverage/
+.vscode/
+.DS_Store
+*.log

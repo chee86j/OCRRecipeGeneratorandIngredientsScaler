@@ -1,0 +1,19 @@
+{
+  "name": "xr-recipe-generator",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "npm@10.8.2",
+  "workspaces": [
+    "client",
+    "server",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @xr/server",
+    "dev:client": "npm run dev --workspace @xr/client",
+    "dev:server": "npm run dev --workspace @xr/server",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  }
+}
