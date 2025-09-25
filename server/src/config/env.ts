@@ -35,6 +35,7 @@ export interface ClassicalOcrConfiguration {
   azureKey: string | null;
   googleProjectId: string | null;
   googleCredentialsPath: string | null;
+  googleVisionApiKey: string | null;
 }
 
 export interface ApplicationConfiguration {
@@ -61,6 +62,7 @@ export const applicationConfiguration: ApplicationConfiguration = {
     azureEndpoint: process.env.AZURE_OCR_ENDPOINT ?? null,
     azureKey: process.env.AZURE_OCR_KEY ?? null,
     googleProjectId: process.env.GOOGLE_CLOUD_PROJECT_ID ?? null,
-    googleCredentialsPath: process.env.GOOGLE_CLOUD_CREDENTIALS_PATH ?? null
+    googleCredentialsPath: process.env.GOOGLE_CLOUD_CREDENTIALS_PATH ?? null,
+    googleVisionApiKey: process.env.GOOGLE_VISION_API_KEY ?? null
   }
 };
