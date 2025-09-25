@@ -1,38 +1,69 @@
-import { FormEvent } from 'react';
+import { FormEvent, useCallback } from 'react';
 import { useRecipeWorkspaceStore } from '@/state/recipeWorkspaceStore';
+import { requestExportRecipe, requestScaleRecipe } from '@/modules/actions/apiClient';
 
 const AppFooter = () => {
   const originalServings = useRecipeWorkspaceStore((state) => state.originalServings);
   const targetServings = useRecipeWorkspaceStore((state) => state.targetServings);
+  const parsedRecipeDraft = useRecipeWorkspaceStore((state) => state.parsedRecipeDraft);
   const setServings = useRecipeWorkspaceStore((state) => state.setServings);
+  const setParsedRecipeDraft = useRecipeWorkspaceStore((state) => state.setParsedRecipeDraft);
+  const isProcessing = useRecipeWorkspaceStore((state) => state.isProcessing);
+  const setProcessing = useRecipeWorkspaceStore((state) => state.setProcessing);
 
   const handleTargetServingsChange = (event: FormEvent<HTMLInputElement>) => {
     const nextValue = Number(event.currentTarget.value);
     setServings(originalServings, Number.isNaN(nextValue) ? null : nextValue);
-    console.log('[AppFooter Placeholder] Updated target servings input');
   };
 
   const handleOriginalServingsChange = (event: FormEvent<HTMLInputElement>) => {
     const nextValue = Number(event.currentTarget.value);
     setServings(Number.isNaN(nextValue) ? null : nextValue, targetServings);
-    console.log('[AppFooter Placeholder] Updated original servings input');
   };
 
-  const handleScaleRecipe = () => {
-    console.log('[AppFooter Placeholder] Triggered recipe scaling operation');
-  };
+  const handleScaleRecipe = useCallback(async () => {
+    if (!parsedRecipeDraft || !originalServings || !targetServings) {
+      console.log('[AppFooter] Ensure recipe and servings are defined before scaling');
+      return;
+    }
 
-  const handleExportJson = () => {
-    console.log('[AppFooter Placeholder] Triggered JSON export');
-  };
+    try {
+      setProcessing(true);
+      const { recipe } = await requestScaleRecipe({
+        recipe: parsedRecipeDraft,
+        originalServings,
+        targetServings
+      });
+      setParsedRecipeDraft(recipe);
+    } catch (error) {
+      console.error('Failed to scale recipe', error);
+    } finally {
+      setProcessing(false);
+    }
+  }, [parsedRecipeDraft, originalServings, targetServings, setParsedRecipeDraft, setProcessing]);
 
-  const handleExportText = () => {
-    console.log('[AppFooter Placeholder] Triggered TXT export');
-  };
+  const handleExport = useCallback(
+    async (format: 'json' | 'txt') => {
+      if (!parsedRecipeDraft) {
+        console.log('[AppFooter] Parse a recipe before exporting');
+        return;
+      }
 
-  const handleDriveUpload = () => {
-    console.log('[AppFooter Placeholder] Triggered Google Drive upload');
-  };
+      try {
+        const exportResult = await requestExportRecipe({ recipe: parsedRecipeDraft, format });
+        const blob = new Blob([exportResult.content], { type: exportResult.mimeType });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = exportResult.fileName;
+        link.click();
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Failed to export recipe', error);
+      }
+    },
+    [parsedRecipeDraft]
+  );
 
   return (
     <footer className="mt-auto w-full border-t border-white/60 bg-white/60 backdrop-blur-xl">
@@ -66,33 +97,29 @@ const AppFooter = () => {
           </div>
           <button
             type="button"
-            className="pill-button bg-brand-primary text-white shadow-soft shadow-brand-primary/40"
+            className="pill-button bg-brand-primary text-white shadow-soft shadow-brand-primary/40 disabled:opacity-60 disabled:cursor-not-allowed"
             onClick={handleScaleRecipe}
+            disabled={isProcessing || !parsedRecipeDraft}
           >
             Scale Recipe
           </button>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <button
-            className="pill-button border border-white/70 bg-white/70 text-neutral-700 hover:bg-white"
+            className="pill-button border border-white/70 bg-white/70 text-neutral-700 hover:bg-white disabled:opacity-60 disabled:cursor-not-allowed"
             type="button"
-            onClick={handleExportJson}
+            onClick={() => handleExport('json')}
+            disabled={!parsedRecipeDraft}
           >
             Export JSON
           </button>
           <button
-            className="pill-button border border-white/70 bg-white/70 text-neutral-700 hover:bg-white"
+            className="pill-button border border-white/70 bg-white/70 text-neutral-700 hover:bg-white disabled:opacity-60 disabled:cursor-not-allowed"
             type="button"
-            onClick={handleExportText}
+            onClick={() => handleExport('txt')}
+            disabled={!parsedRecipeDraft}
           >
             Export TXT
-          </button>
-          <button
-            className="pill-button bg-brand-secondary/20 text-brand-secondary"
-            type="button"
-            onClick={handleDriveUpload}
-          >
-            Upload to Drive
           </button>
         </div>
       </div>

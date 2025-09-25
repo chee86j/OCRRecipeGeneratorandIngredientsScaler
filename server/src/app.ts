@@ -1,9 +1,13 @@
-﻿import cors from 'cors';
+import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import pinoHttp from 'pino-http';
 import { healthRouter } from './routes/healthRouter';
 import { ocrRouter } from './routes/ocrRouter';
+import { parseRouter } from './routes/parseRouter';
+import { validateRouter } from './routes/validateRouter';
+import { scaleRouter } from './routes/scaleRouter';
+import { exportRouter } from './routes/exportRouter';
 import { globalErrorHandler, notFoundHandler } from './middlewares/errorHandler';
 import { applicationLogger } from './logger';
 
@@ -40,6 +44,10 @@ export const buildApplication = () => {
 
   application.use('/api', healthRouter);
   application.use('/api', ocrRouter);
+  application.use('/api', parseRouter);
+  application.use('/api', validateRouter);
+  application.use('/api', scaleRouter);
+  application.use('/api', exportRouter);
 
   application.use(notFoundHandler);
   application.use(globalErrorHandler);

@@ -1,4 +1,4 @@
-﻿import { Router } from 'express';
+import { Router } from 'express';
 import { z } from 'zod';
 import { ocrOrchestratorService } from '../container';
 import { HttpError } from '../middlewares/errorHandler';
@@ -22,14 +22,14 @@ ocrRouter.post('/ocr/image', async (request, response, next) => {
 
     const imageBuffer = Buffer.from(cleanedBase64Payload, 'base64');
 
-    const orchestratedResult = await ocrOrchestratorService.processImageBuffer(
+    const classicalOcrResult = await ocrOrchestratorService.processImageBuffer(
       imageBuffer,
       parsedBody.mimeType,
       parsedBody.originalFileName
     );
 
     response.json({
-      data: orchestratedResult
+      data: classicalOcrResult
     });
   } catch (error) {
     next(error);

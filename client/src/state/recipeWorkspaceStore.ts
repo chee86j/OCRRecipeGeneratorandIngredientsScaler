@@ -1,16 +1,16 @@
-﻿import { create } from 'zustand';
-import type { ParsedRecipe } from '@xr/shared';
+import { create } from 'zustand';
+import type { ParsedRecipe, ValidationWarning } from '@xr/shared';
 
 interface RecipeWorkspaceState {
   extractedTextDraft: string;
   parsedRecipeDraft: ParsedRecipe | null;
-  warnings: string[];
+  warnings: ValidationWarning[];
   originalServings: number | null;
   targetServings: number | null;
   isProcessing: boolean;
   setExtractedTextDraft: (nextDraft: string) => void;
   setParsedRecipeDraft: (nextRecipe: ParsedRecipe | null) => void;
-  setWarnings: (nextWarnings: string[]) => void;
+  setWarnings: (nextWarnings: ValidationWarning[]) => void;
   setServings: (originalServings: number | null, targetServings: number | null) => void;
   setProcessing: (processingState: boolean) => void;
   resetWorkspace: () => void;

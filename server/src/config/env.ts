@@ -1,4 +1,4 @@
-﻿import dotenv from 'dotenv';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -27,14 +27,6 @@ const getNumberFromEnvironment = (environmentKey: string, defaultValue: number):
   return numericEnvironmentValue;
 };
 
-export interface OpenAiConfiguration {
-  apiKey: string;
-  baseUrl: string;
-  visionModel: string;
-  transcriptionModel: string;
-  requestTimeoutMilliseconds: number;
-}
-
 export type ClassicalOcrProvider = 'azure' | 'google' | 'none';
 
 export interface ClassicalOcrConfiguration {
@@ -48,7 +40,6 @@ export interface ClassicalOcrConfiguration {
 export interface ApplicationConfiguration {
   environment: string;
   port: number;
-  openAi: OpenAiConfiguration;
   classicalOcr: ClassicalOcrConfiguration;
 }
 
@@ -65,16 +56,6 @@ const resolveClassicalOcrProvider = (): ClassicalOcrProvider => {
 export const applicationConfiguration: ApplicationConfiguration = {
   environment: getStringFromEnvironment('NODE_ENV', 'development'),
   port: getNumberFromEnvironment('PORT', 4000),
-  openAi: {
-    apiKey: getStringFromEnvironment('OPENAI_API_KEY', 'replace-me'),
-    baseUrl: getStringFromEnvironment('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
-    visionModel: getStringFromEnvironment('OPENAI_VISION_MODEL', 'gpt-4o-mini'),
-    transcriptionModel: getStringFromEnvironment(
-      'OPENAI_TRANSCRIPTION_MODEL',
-      'gpt-4o-mini-transcribe'
-    ),
-    requestTimeoutMilliseconds: getNumberFromEnvironment('OPENAI_TIMEOUT_MS', 60000)
-  },
   classicalOcr: {
     providerName: resolveClassicalOcrProvider(),
     azureEndpoint: process.env.AZURE_OCR_ENDPOINT ?? null,

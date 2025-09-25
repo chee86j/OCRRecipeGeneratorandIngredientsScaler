@@ -1,5 +1,5 @@
 import { ChangeEvent, Fragment } from 'react';
-import type { ParsedRecipe } from '@xr/shared';
+import type { IngredientQuantity, ParsedRecipe } from '@xr/shared';
 
 type RecipeTabIdentifier = 'extracted-text' | 'structured-recipe' | 'xr-preview';
 
@@ -16,6 +16,18 @@ const tabDefinitions: Array<{ identifier: RecipeTabIdentifier; label: string; de
   { identifier: 'structured-recipe', label: 'Recipe View', description: 'Curated ingredients and steps' },
   { identifier: 'xr-preview', label: 'XR Board', description: 'Immersive cooking overlay' }
 ];
+
+const formatQuantity = (quantity: IngredientQuantity): string => {
+  if (quantity === null) {
+    return '--';
+  }
+
+  if (typeof quantity === 'number') {
+    return quantity.toString();
+  }
+
+  return `${quantity.min}-${quantity.max}`;
+};
 
 export const RecipeTabs = ({
   activeTabIdentifier,
@@ -85,7 +97,7 @@ export const RecipeTabs = ({
                 <Fragment>
                   <header className="space-y-1 border-b border-white/60 pb-4">
                     <h3 className="font-display text-2xl font-semibold text-neutral-900">
-                      {parsedRecipeDraft.title}
+                      {parsedRecipeDraft.title || 'Untitled recipe'}
                     </h3>
                     <p className="text-sm text-neutral-600">
                       Servings: {parsedRecipeDraft.originalServings ?? 'Unknown'} - Last updated{' '}
@@ -99,13 +111,15 @@ export const RecipeTabs = ({
                         {parsedRecipeDraft.ingredients.map((ingredient) => (
                           <li key={`${ingredient.ingredient}-${ingredient.raw}`} className="flex items-start gap-3">
                             <span className="mt-0.5 rounded-full bg-brand-primary/10 px-3 py-1 text-xs font-semibold text-brand-primary">
-                              {ingredient.quantity ?? '--'} {ingredient.unit ?? ''}
+                              {formatQuantity(ingredient.quantity)}{' '}
+                              {ingredient.unit ?? ''}
                             </span>
                             <div>
                               <p className="font-medium text-neutral-900">{ingredient.ingredient}</p>
                               {ingredient.note ? (
                                 <p className="text-xs text-neutral-500">{ingredient.note}</p>
                               ) : null}
+                              <p className="text-[0.7rem] text-neutral-400">{ingredient.raw}</p>
                             </div>
                           </li>
                         ))}
@@ -115,7 +129,7 @@ export const RecipeTabs = ({
                       <h4 className="text-sm font-semibold uppercase tracking-wide text-neutral-500">Instructions</h4>
                       <ol className="mt-3 space-y-3 text-sm text-neutral-800">
                         {parsedRecipeDraft.instructions.map((instruction, index) => (
-                          <li key={instruction} className="rounded-xl bg-white/80 p-4 shadow-inset">
+                          <li key={`${instruction}-${index}`} className="rounded-xl bg-white/80 p-4 shadow-inset">
                             <span className="mr-2 rounded-full bg-brand-accent/20 px-3 py-1 text-xs font-semibold text-brand-accent">
                               Step {index + 1}
                             </span>

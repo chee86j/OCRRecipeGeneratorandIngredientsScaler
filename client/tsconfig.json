@@ -1,15 +1,32 @@
-﻿{
-  "extends": "../tsconfig.base.json",
-  "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "jsx": "react-jsx",
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "allowJs": false,
-    "isolatedModules": true,
-    "noEmit": true,
-    "types": ["vite/client"]
-  },
-  "include": ["src", "vite-env.d.ts"],
-  "references": []
+{
+    "extends":  "../tsconfig.base.json",
+    "compilerOptions":  {
+                            "lib":  [
+                                        "DOM",
+                                        "DOM.Iterable",
+                                        "ES2022"
+                                    ],
+                            "jsx":  "react-jsx",
+                            "module":  "ESNext",
+                            "moduleResolution":  "Node",
+                            "allowJs":  false,
+                            "isolatedModules":  true,
+                            "noEmit":  true,
+                            "types":  [
+                                          "vite/client"
+                                      ],
+                            "baseUrl":  ".",
+                            "paths":  {
+                                          "@/*":  [
+                                                      "src/*"
+                                                  ]
+                                      }
+                        },
+    "include":  [
+                    "src",
+                    "vite-env.d.ts"
+                ],
+    "references":  [
+
+                   ]
 }
